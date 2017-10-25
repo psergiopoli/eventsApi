@@ -1,6 +1,6 @@
 package br.com.events.model;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -12,6 +12,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 public class Event {
@@ -23,12 +27,15 @@ public class Event {
 	
 	@ManyToOne
 	@JoinColumn(name="user_all_id")
+	@JsonIgnoreProperties({"events","inviteSends","receivedInvites"})
 	private User creator;
 	
 	private String description;
 	
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date event_start;
 	
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date event_end;
 	
 	private boolean active;

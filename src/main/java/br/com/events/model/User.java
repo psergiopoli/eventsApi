@@ -14,8 +14,18 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 @Entity(name="user_all")
 public class User {
+	
+	public User() {}
+	
+	public User(Long id) {
+		this.id = id;
+	}
 
 	@Id
 	@SequenceGenerator(name = "USER_ALL_ID", sequenceName = "USER_ALL_SEQ", allocationSize = 1)
@@ -27,6 +37,7 @@ public class User {
 	@Column(unique=true)
 	private String email;
 
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private String password;
 
 	private String favoriteMeme;

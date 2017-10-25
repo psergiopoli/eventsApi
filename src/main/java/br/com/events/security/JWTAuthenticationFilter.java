@@ -21,7 +21,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-	
+
 	private AuthenticationManager authenticationManager;
 
 	public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
@@ -32,11 +32,10 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
 			throws AuthenticationException {
 		br.com.events.model.User creds = new br.com.events.model.User();
-		creds.setName(obtainUsername(req));
+		creds.setEmail(obtainUsername(req));
 		creds.setPassword(obtainPassword(req));
 
-		return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(creds.getName(),
-				creds.getPassword(), new ArrayList<>()));
+		return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getPassword(), new ArrayList<>()));
 	}
 
 	@Override
@@ -48,7 +47,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 				.signWith(SignatureAlgorithm.HS512, SecurityConstants.SECRET.getBytes()).compact();
 		res.setContentType("application/json");
 		PrintWriter out = res.getWriter();
-		out.print("{\"token\":\""+SecurityConstants.TOKEN_PREFIX + token+"\"}");
+		out.print("{\"token\":\"" + SecurityConstants.TOKEN_PREFIX + token + "\"}");
 		out.flush();
 	}
 }

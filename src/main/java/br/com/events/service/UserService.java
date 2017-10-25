@@ -27,14 +27,19 @@ public class UserService implements UserDetailsService{
 	public void createUser(User user){
 		pr.save(user);
 	}
+	
+	public User findUserByEmail(String email){
+		 User user = pr.findByEmail(email);
+		 return user;		
+	}
 
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = pr.findByEmail(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = pr.findByEmail(email);
 
         if(user == null) {
-            throw new UsernameNotFoundException(String.format("The username %s doesn't exist", username));
+            throw new UsernameNotFoundException(String.format("The email %s doesn't exist", email));
         }
 
         List<GrantedAuthority> authorities = new ArrayList<>();
@@ -42,7 +47,7 @@ public class UserService implements UserDetailsService{
             authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
         });
 
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getName(), user.getPassword(), authorities);
+        UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
 
         return userDetails;
     }

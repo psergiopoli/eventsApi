@@ -1,6 +1,6 @@
 package br.com.events.repository;
 
-import java.sql.Date;
+import java.util.Date;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

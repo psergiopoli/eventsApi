@@ -1,10 +1,66 @@
 package br.com.events.controllers;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.events.exception.CannotAcceptInviteException;
+import br.com.events.exception.InviteAlreadySendException;
+import br.com.events.model.Invite;
+import br.com.events.service.InviteService;
+import br.com.events.util.ResponseUtil;
+
 @RestController
-@CrossOrigin(origins = "*")
 public class InviteEndpoint {
+	
+	private InviteService inviteService;
+	
+	public InviteEndpoint(InviteService inviteService) {
+		this.inviteService = inviteService;
+	}
+	
+	@Secured("ROLE_USER")
+    @RequestMapping(value = "/invite", method=RequestMethod.POST)
+    public ResponseEntity<ResponseUtil> createInvite(@RequestParam(name="event")Long eventId,@RequestParam(name="user")Long userId,Authentication authentication) {
+    	try {
+			inviteService.sendInvite(eventId, userId, authentication.getName());
+		} catch (InviteAlreadySendException e) {
+			return new ResponseEntity<ResponseUtil>(new ResponseUtil(e.getMessage()),HttpStatus.BAD_REQUEST);
+		}
+    	return new ResponseEntity<ResponseUtil>(new ResponseUtil("invite send"),HttpStatus.OK);
+    }
+	
+	@Secured("ROLE_USER")
+    @RequestMapping(value = "/invite/{inviteId}", method=RequestMethod.PUT)
+    public ResponseEntity<ResponseUtil> acceptInvite(@PathVariable(name="inviteId")Long inviteId,Authentication authentication) {
+		try {
+			inviteService.acceptInvite(inviteId,authentication.getName());
+		} catch (CannotAcceptInviteException e) {
+			return new ResponseEntity<ResponseUtil>(new ResponseUtil(e.getMessage()),HttpStatus.BAD_REQUEST);
+		}
+    	return new ResponseEntity<ResponseUtil>(new ResponseUtil("invite accepted"),HttpStatus.OK);
+    }
+	
+	@Secured("ROLE_USER")
+    @RequestMapping(value = "/invite/{inviteId}", method=RequestMethod.DELETE)
+    public ResponseEntity<ResponseUtil> unacceptInvite(@PathVariable(name="inviteId")Long inviteId,Authentication authentication) {
+		inviteService.unacceptInvite(inviteId);
+		return new ResponseEntity<ResponseUtil>(new ResponseUtil("invite unaccepted"),HttpStatus.OK);
+    }
+	
+	@Secured("ROLE_USER")
+    @RequestMapping(value = "/invite/list", method=RequestMethod.GET)
+    public ResponseEntity<List<Invite>> listInvitesByUser(Authentication authentication) {
+		List<Invite> invites = inviteService.listInvites(authentication.getName());
+    	return new ResponseEntity<List<Invite>>(invites,HttpStatus.OK);
+    }
 
 }

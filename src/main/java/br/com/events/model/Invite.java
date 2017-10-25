@@ -8,6 +8,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 public class Invite {
 	
@@ -18,14 +20,17 @@ public class Invite {
 	
 	@ManyToOne
 	@JoinColumn(name="event_id")
+	@JsonIgnoreProperties({"creator","invites"})
 	private Event event;
 	
 	@ManyToOne
 	@JoinColumn(name="invited_id")
+	@JsonIgnoreProperties({"events","inviteSends","receivedInvites"})
 	private User invited;
 	
 	@ManyToOne
 	@JoinColumn(name="whoInvited_id")
+	@JsonIgnoreProperties({"events","inviteSends","receivedInvites"})
 	private User whoInvited;
 	
 	private boolean accepted;

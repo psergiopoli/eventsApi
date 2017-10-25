@@ -20,17 +20,19 @@ public class EventService {
 		this.eventRepository = eventRepository;
 	}
 	
-	public void createEvent(Event event){
+	public Event createEvent(Event event){
 		event.setActive(true);
 		eventRepository.save(event);
+		return event;
 	}
 	
-	public void editEvent(Event event){
+	public Event editEvent(Event event){
 		Event eventToUpdate = eventRepository.findOne(event.getId());
 		eventToUpdate.setDescription(event.getDescription());
 		eventToUpdate.setEvent_end(event.getEvent_end());
 		eventToUpdate.setEvent_start(event.getEvent_start());
 		eventRepository.save(eventToUpdate);
+		return eventToUpdate;
 	}
 	
 	public void removeEvent(Event event){
