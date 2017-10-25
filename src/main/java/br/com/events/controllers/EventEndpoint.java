@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,9 +44,9 @@ public class EventEndpoint {
     }
 	
 	@Secured("ROLE_USER")
-    @RequestMapping(value = "/event/user/{userId}", method=RequestMethod.GET)
-    public ResponseEntity<Page<Event>> listUserEvents(@PathVariable(name="userId")Long userId,@RequestParam(name="page")Integer page,@RequestParam(name="size")Integer size) {
-    	return new ResponseEntity<Page<Event>>(eventService.listEvents(page, size, userId),HttpStatus.OK);
+    @RequestMapping(value = "/event/user", method=RequestMethod.GET)
+    public ResponseEntity<Page<Event>> listUserEvents(@RequestParam(name="page")Integer page,@RequestParam(name="size")Integer size,Authentication authentication) {
+    	return new ResponseEntity<Page<Event>>(eventService.listEvents(page, size, authentication.getName()),HttpStatus.OK);
     }
 	
 	@Secured("ROLE_USER")
