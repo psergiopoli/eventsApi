@@ -1,0 +1,14 @@
+create sequence event_all_seq start 1 increment 1;
+create sequence role_seq start 1 increment 1;
+create sequence user_all_seq start 1 increment 1;
+create table event_all (id int8 not null, description varchar(255), event_end date, event_start date, primary key (id));
+create table role (id int8 not null, description varchar(255), role_name varchar(255), primary key (id));
+create table user_all (id int8 not null, email varchar(255), favorite_meme varchar(255), name varchar(255), password varchar(255), primary key (id));
+create table user_all_events (user_all_id int8 not null, events_id int8 not null);
+create table user_all_role (user_all_id int8 not null, role_id int8 not null);
+alter table user_all add constraint UK_myu9ilf2vosesn25g0x2j4dae unique (email);
+alter table user_all_events add constraint UK_h4lb7f9f5ej1xftdw7npw3oyg unique (events_id);
+alter table user_all_events add constraint FKbvcccsd12n7v8e7v5kgwcogbn foreign key (events_id) references event_all;
+alter table user_all_events add constraint FKpc93jn2vcs098cf7w20gtpmen foreign key (user_all_id) references user_all;
+alter table user_all_role add constraint FKramtuja22yq9adt7fywr9xqdp foreign key (role_id) references role;
+alter table user_all_role add constraint FKbe1h09e8glmp06fwy6s6h3x1g foreign key (user_all_id) references user_all;
