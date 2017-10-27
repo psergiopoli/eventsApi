@@ -18,6 +18,7 @@ import br.com.events.model.Invite;
 import br.com.events.service.InviteService;
 import br.com.events.util.ResponseUtil;
 
+@Secured("ROLE_USER")
 @RestController
 public class InviteEndpoint {
 	
@@ -27,36 +28,32 @@ public class InviteEndpoint {
 		this.inviteService = inviteService;
 	}
 	
-	@Secured("ROLE_USER")
-    @RequestMapping(value = "/invite", method=RequestMethod.POST)
+    @RequestMapping(value = "/invite", method=RequestMethod.GET)
     public ResponseEntity<ResponseUtil> createInvite(@RequestParam(name="event")Long eventId,@RequestParam(name="user")Long userId,Authentication authentication) {
     	try {
 			inviteService.sendInvite(eventId, userId, authentication.getName());
 		} catch (InviteAlreadySendException e) {
-			return new ResponseEntity<ResponseUtil>(new ResponseUtil(e.getMessage()),HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponseUtil>(new ResponseUtil(e.getMessage()),HttpStatus.CONFLICT);
 		}
     	return new ResponseEntity<ResponseUtil>(new ResponseUtil("invite send"),HttpStatus.OK);
     }
 	
-	@Secured("ROLE_USER")
     @RequestMapping(value = "/invite/{inviteId}", method=RequestMethod.PUT)
-    public ResponseEntity<ResponseUtil> acceptInvite(@PathVariable(name="inviteId")Long inviteId,Authentication authentication) {
+    public ResponseEntity<ResponseUtil> acceptInvite(@PathVariable(name="inviteId")Long inviteId) {
 		try {
-			inviteService.acceptInvite(inviteId,authentication.getName());
+			inviteService.acceptInvite(inviteId);
 		} catch (CannotAcceptInviteException e) {
-			return new ResponseEntity<ResponseUtil>(new ResponseUtil(e.getMessage()),HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponseUtil>(new ResponseUtil(e.getMessage()),HttpStatus.CONFLICT);
 		}
     	return new ResponseEntity<ResponseUtil>(new ResponseUtil("invite accepted"),HttpStatus.OK);
     }
 	
-	@Secured("ROLE_USER")
     @RequestMapping(value = "/invite/{inviteId}", method=RequestMethod.DELETE)
     public ResponseEntity<ResponseUtil> unacceptInvite(@PathVariable(name="inviteId")Long inviteId,Authentication authentication) {
 		inviteService.unacceptInvite(inviteId);
 		return new ResponseEntity<ResponseUtil>(new ResponseUtil("invite unaccepted"),HttpStatus.OK);
     }
 	
-	@Secured("ROLE_USER")
     @RequestMapping(value = "/invite/list", method=RequestMethod.GET)
     public ResponseEntity<List<Invite>> listInvitesByUser(Authentication authentication) {
 		List<Invite> invites = inviteService.listInvites(authentication.getName());

@@ -48,14 +48,15 @@ public class InviteService {
 		}
 	}
 	
-	public void acceptInvite(Long inviteId,String emailInvited) throws CannotAcceptInviteException{
+	public void acceptInvite(Long inviteId) throws CannotAcceptInviteException{
 		Invite invite = inviteRepository.findOne(inviteId);
 		if(invite.isAccepted()){
 			throw new CannotAcceptInviteException("Invite is already accepted");
 		}
-		User whoInvitedUser = userRepository.findByEmail(emailInvited);
-		List<Invite> inviteTest = inviteRepository.findEventBetweenDate(invite.getEvent().getEvent_start(), invite.getEvent().getEvent_end(),whoInvitedUser.getId());
-		if(inviteTest.size() > 0){
+		
+		List<Invite> inviteTest = inviteRepository.findEventBetweenDate(invite.getEvent().getEvent_start(), invite.getEvent().getEvent_end(),invite.getInvited().getId());
+		List<Event> eventTest = eventRepository.findEventBetweenDate(invite.getEvent().getEvent_start(), invite.getEvent().getEvent_end(),invite.getInvited().getId());
+		if(inviteTest.size() > 0|| eventTest.size()>0 ){
 			throw new CannotAcceptInviteException("This invite cannot be accepted because have another in same date");
 		}else{
 			invite.setAccepted(true);

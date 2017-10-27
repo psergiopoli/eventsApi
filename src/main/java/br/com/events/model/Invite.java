@@ -16,7 +16,7 @@ public class Invite {
 	@Id
 	@SequenceGenerator(name = "INVITE_ID", sequenceName = "INVITE_SEQ", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "INVITE_ID")
-	private Long id;
+	private Long Id;
 	
 	@ManyToOne
 	@JoinColumn(name="event_id")
@@ -65,6 +65,14 @@ public class Invite {
 
 	public void setAccepted(boolean accepted) {
 		this.accepted = accepted;
+	}
+
+	public Long getId() {
+		return Id;
+	}
+
+	public void setId(Long id) {
+		Id = id;
 	}
 
 }
