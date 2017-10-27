@@ -49,6 +49,10 @@ public class EventService {
 		}
 	}
 	
+	public Event getEventById(Long eventId){
+		return eventRepository.findOne(eventId);
+	}
+	
 	public Event editEvent(Event event){
 		Event eventToUpdate = eventRepository.findOne(event.getId());
 		eventToUpdate.setDescription(event.getDescription());

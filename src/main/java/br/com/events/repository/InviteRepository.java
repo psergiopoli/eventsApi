@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import br.com.events.model.Event;
 import br.com.events.model.Invite;
 import br.com.events.model.User;
 
@@ -22,5 +23,8 @@ public interface InviteRepository extends CrudRepository<Invite, Long>{
 	public List<Invite> findEventBetweenDate(@Param(value = "start") Date start,@Param(value = "end") Date end,@Param(value = "userid") Long userIdInvited);
 	
 	public List<Invite> findByInvited(User user);
+	
+	@Query("FROM Invite i WHERE i.invited=:invited AND i.whoInvited=:whoinvited AND i.event=:event")
+	public Invite findByInvitedAndWhoInvitedAndEvent(@Param(value = "invited")User invited,@Param(value = "whoinvited") User whoInvited,@Param(value = "event") Event event);
 	
 }

@@ -75,5 +75,19 @@ public class InviteService {
 		List<Invite> invites = inviteRepository.findByInvited(whoInvitedUser);
 		return invites;
 	}
+	
+	public Invite getInviteById(Long inviteId){
+		return inviteRepository.findOne(inviteId);
+	}
+
+
+	public void unacceptInvite(Long eventId, Long userIdInvited, String emailWhoInvite) {
+		User userInvite = userRepository.findOne(userIdInvited);
+		User userWhoInvite = userRepository.findByEmail(emailWhoInvite);
+		Event event = eventRepository.findOne(userIdInvited);
+		Invite invite = inviteRepository.findByInvitedAndWhoInvitedAndEvent(userInvite,userWhoInvite,event);
+		invite.setAccepted(false);
+		inviteRepository.save(invite);		
+	}
 
 }

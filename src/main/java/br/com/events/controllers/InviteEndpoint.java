@@ -28,7 +28,7 @@ public class InviteEndpoint {
 		this.inviteService = inviteService;
 	}
 	
-    @RequestMapping(value = "/invite", method=RequestMethod.GET)
+    @RequestMapping(value = "/invite", method=RequestMethod.PUT)
     public ResponseEntity<ResponseUtil> createInvite(@RequestParam(name="event")Long eventId,@RequestParam(name="user")Long userId,Authentication authentication) {
     	try {
 			inviteService.sendInvite(eventId, userId, authentication.getName());
@@ -37,8 +37,14 @@ public class InviteEndpoint {
 		}
     	return new ResponseEntity<ResponseUtil>(new ResponseUtil("invite send"),HttpStatus.OK);
     }
+    
+    @RequestMapping(value = "/invite/{inviteId}", method=RequestMethod.GET)
+    public ResponseEntity<Invite> getInvite(@PathVariable(name="inviteId")Long inviteId,Authentication authentication) {
+    	Invite invite = inviteService.getInviteById(inviteId);
+    	return new ResponseEntity<Invite>(invite,HttpStatus.OK);
+    }
 	
-    @RequestMapping(value = "/invite/{inviteId}", method=RequestMethod.PUT)
+    @RequestMapping(value = "/invite/{inviteId}", method=RequestMethod.PATCH)
     public ResponseEntity<ResponseUtil> acceptInvite(@PathVariable(name="inviteId")Long inviteId) {
 		try {
 			inviteService.acceptInvite(inviteId);
@@ -51,6 +57,12 @@ public class InviteEndpoint {
     @RequestMapping(value = "/invite/{inviteId}", method=RequestMethod.DELETE)
     public ResponseEntity<ResponseUtil> unacceptInvite(@PathVariable(name="inviteId")Long inviteId,Authentication authentication) {
 		inviteService.unacceptInvite(inviteId);
+		return new ResponseEntity<ResponseUtil>(new ResponseUtil("invite unaccepted"),HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/invite", method=RequestMethod.DELETE)
+    public ResponseEntity<ResponseUtil> unacceptInvite(@RequestParam(name="event")Long eventId,@RequestParam(name="user")Long userId,Authentication authentication) {
+		inviteService.unacceptInvite(eventId,userId,authentication.getName());
 		return new ResponseEntity<ResponseUtil>(new ResponseUtil("invite unaccepted"),HttpStatus.OK);
     }
 	
