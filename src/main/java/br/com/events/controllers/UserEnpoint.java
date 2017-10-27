@@ -36,7 +36,7 @@ public class UserEnpoint {
 		try {
 			userService.createUser(user);
 		} catch (UserAlreadyExistException e) {
-			new ResponseEntity<ResponseUtil>(new ResponseUtil(e.getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponseUtil>(new ResponseUtil(e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<ResponseUtil>(new ResponseUtil("Signup success."), HttpStatus.CREATED);
 	}

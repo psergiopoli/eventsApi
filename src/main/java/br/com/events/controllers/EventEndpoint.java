@@ -1,5 +1,7 @@
 package br.com.events.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -68,9 +70,9 @@ public class EventEndpoint {
     }
 	
     @RequestMapping(value = "/event/all", method=RequestMethod.GET)
-    public ResponseEntity<Page<?>> listAllEventsInvitedAndCreated(@RequestParam(name="page")Integer page,@RequestParam(name="size")Integer size,Authentication authentication) {
-		Page<Event> pr = eventService.listAllEvents(page, size,authentication.getName());
-    	return new ResponseEntity<Page<?>>(pr,HttpStatus.OK);
+    public ResponseEntity<List<?>> listAllEventsInvitedAndCreated(Authentication authentication) {
+		List<?> eventsInvites = eventService.listAllEvents(authentication.getName());
+    	return new ResponseEntity<List<?>>(eventsInvites,HttpStatus.OK);
     }
 
 }

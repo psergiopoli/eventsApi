@@ -1,5 +1,7 @@
 package br.com.events.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +14,10 @@ import org.springframework.stereotype.Service;
 import br.com.events.exception.CannotAcceptInviteException;
 import br.com.events.exception.InvalidEndOrStartDayOfEventException;
 import br.com.events.model.Event;
+import br.com.events.model.Invite;
 import br.com.events.model.User;
 import br.com.events.repository.EventRepository;
+import br.com.events.repository.InviteRepository;
 import br.com.events.repository.UserRepository;
 
 @Service
@@ -23,10 +27,13 @@ public class EventService {
 	
 	private UserRepository userRepository;
 	
+	private InviteRepository inviteRepository;
+	
 	@Autowired
-	public EventService(EventRepository eventRepository,UserRepository userRepository){
+	public EventService(EventRepository eventRepository,UserRepository userRepository,InviteRepository inviteRepository){
 		this.eventRepository = eventRepository;
 		this.userRepository = userRepository;
+		this.inviteRepository = inviteRepository;
 	}
 	
 	public Event createEvent(Event event,String email) throws CannotAcceptInviteException, InvalidEndOrStartDayOfEventException{
@@ -72,10 +79,20 @@ public class EventService {
 		return eventRepository.findAllWhereActiveTrueByUser(user.getId(),pr);		
 	}
 	
-	public Page<Event> listAllEvents(Integer page, Integer size, String email){
+	public List<Event> listAllEvents(String email){
 		User user = userRepository.findByEmail(email);
-		Pageable pr = new PageRequest(page, size,Direction.ASC,"event_end");
-		return eventRepository.findAllCreatedAndInvited(user.getId(),pr);		
+		List<Event> events = eventRepository.findAllWhereActiveTrueByUser(user.getId());
+		List<Invite> invites = inviteRepository.findByInvited(user);
+		List<Event> eventsInvites = new ArrayList<Event>();
+		eventsInvites.addAll(events);
+		
+		for (Invite invite : invites) {
+			Event tempEvent = invite.getEvent();
+			tempEvent.setInvitedEvent(true);
+			eventsInvites.add(tempEvent);
+		}
+		Collections.sort(eventsInvites);		
+		return eventsInvites;
 	}
 	
 	public Page<Event> listEvents(Integer page, Integer size){

@@ -30,6 +30,9 @@ public interface EventRepository extends CrudRepository<Event, Long>{
 	@Query("FROM Event e WHERE e.active = TRUE AND e.creator.id=:id")
 	public Page<Event> findAllWhereActiveTrueByUser(@Param(value = "id") Long id,Pageable pageable);
 	
+	@Query("FROM Event e WHERE e.active = TRUE AND e.creator.id=:id")
+	public List<Event> findAllWhereActiveTrueByUser(@Param(value = "id") Long id);
+	
 	@Query("FROM Event e WHERE ("+BETWEEN_DATE_OUT_EVENT+" OR "+BETWEEN_DATE_IN_EVENT+") AND e.active=TRUE AND e.creator.id=:userid")
 	public List<Event> findEventBetweenDate(@Param(value = "start") Date start,@Param(value = "end") Date end,@Param(value = "userid") Long userid);
 	
@@ -43,7 +46,4 @@ public interface EventRepository extends CrudRepository<Event, Long>{
 	@Modifying
 	@Query("UPDATE Event e SET e.active = TRUE WHERE e.id=:id")
 	public void reactiveEvent(@Param(value = "id") Long id);
-	
-	@Query("FROM Event e LEFT JOIN e.invites i WHERE e.active = TRUE AND (e.creator.id=:id OR i.invited.id=:id)")
-	public Page<Event> findAllCreatedAndInvited(@Param(value = "id") Long id,Pageable pageable);
 }

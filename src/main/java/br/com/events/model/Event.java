@@ -14,11 +14,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-public class Event {
+public class Event implements Comparable<Event>{
 	
 	@Id
 	@SequenceGenerator(name = "EVENT_ID", sequenceName = "EVENT_SEQ", allocationSize = 1)
@@ -41,7 +42,10 @@ public class Event {
 	private boolean active;
 	
 	@OneToMany(mappedBy="event",fetch = FetchType.LAZY)
-	private List<Invite> invites;
+	private List<Invite> invites;	
+	
+	@Transient
+	private boolean invitedEvent = false;
 
 	public Long getId() {
 		return id;
@@ -97,6 +101,20 @@ public class Event {
 
 	public void setInvites(List<Invite> invites) {
 		this.invites = invites;
+	}
+
+	public boolean isInvitedEvent() {
+		return invitedEvent;
+	}
+
+	public void setInvitedEvent(boolean invitedEvent) {
+		this.invitedEvent = invitedEvent;
+	}
+
+	@Override
+	public int compareTo(Event o) {
+		return getEvent_end().compareTo(o.getEvent_end());
+		//return o.getEvent_end().compareTo(getEvent_end());
 	}
 
 }
