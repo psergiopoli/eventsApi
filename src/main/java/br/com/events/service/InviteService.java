@@ -84,7 +84,7 @@ public class InviteService {
 	public void unacceptInvite(Long eventId, Long userIdInvited, String emailWhoInvite) {
 		User userInvite = userRepository.findOne(userIdInvited);
 		User userWhoInvite = userRepository.findByEmail(emailWhoInvite);
-		Event event = eventRepository.findOne(userIdInvited);
+		Event event = eventRepository.findOne(eventId);
 		Invite invite = inviteRepository.findByInvitedAndWhoInvitedAndEvent(userInvite,userWhoInvite,event);
 		invite.setAccepted(false);
 		inviteRepository.save(invite);		

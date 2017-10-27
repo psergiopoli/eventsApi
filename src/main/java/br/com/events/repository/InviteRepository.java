@@ -24,7 +24,6 @@ public interface InviteRepository extends CrudRepository<Invite, Long>{
 	
 	public List<Invite> findByInvited(User user);
 	
-	@Query("FROM Invite i WHERE i.invited=:invited AND i.whoInvited=:whoinvited AND i.event=:event")
-	public Invite findByInvitedAndWhoInvitedAndEvent(@Param(value = "invited")User invited,@Param(value = "whoinvited") User whoInvited,@Param(value = "event") Event event);
+	public Invite findByInvitedAndWhoInvitedAndEvent(User invited,User whoInvited, Event event);
 	
 }
