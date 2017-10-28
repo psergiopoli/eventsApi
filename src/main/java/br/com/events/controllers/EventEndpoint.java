@@ -48,14 +48,20 @@ public class EventEndpoint {
     	return new ResponseEntity<Event>(event,HttpStatus.OK);		
     }
 	
-    @RequestMapping(value = "/event", method=RequestMethod.DELETE)
-    public void removeEvent(@RequestBody Event event) {
-		eventService.removeEvent(event);		
+    @RequestMapping(value = "/event/{eventId}", method=RequestMethod.DELETE)
+    public void removeEvent(@PathVariable(name="eventId") Long eventId) {
+		eventService.removeEvent(eventId);		
     }
 
     @RequestMapping(value = "/event", method=RequestMethod.PUT)
-    public ResponseEntity<Event> editEvent(@RequestBody Event event) {
-    	return new ResponseEntity<Event>(eventService.editEvent(event),HttpStatus.OK);
+    public ResponseEntity<Event> editEvent(@RequestBody Event event,Authentication authentication) {
+    	try {
+			return new ResponseEntity<Event>(eventService.editEvent(event,authentication.getName()),HttpStatus.OK);
+		} catch (InvalidEndOrStartDayOfEventException e) {
+			return new ResponseEntity<Event>(HttpStatus.BAD_REQUEST);
+		} catch (CannotAcceptInviteException e) {
+			return new ResponseEntity<Event>(HttpStatus.CONFLICT);
+		}
     }
 	
     @RequestMapping(value = "/event/user", method=RequestMethod.GET)

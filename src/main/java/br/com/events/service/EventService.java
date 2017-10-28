@@ -2,7 +2,9 @@ package br.com.events.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -60,17 +62,33 @@ public class EventService {
 		return eventRepository.findOne(eventId);
 	}
 	
-	public Event editEvent(Event event){
-		Event eventToUpdate = eventRepository.findOne(event.getId());
-		eventToUpdate.setDescription(event.getDescription());
-		eventToUpdate.setEvent_end(event.getEvent_end());
-		eventToUpdate.setEvent_start(event.getEvent_start());
-		eventRepository.save(eventToUpdate);
-		return eventToUpdate;
+	public Event editEvent(Event event,String email) throws InvalidEndOrStartDayOfEventException, CannotAcceptInviteException{
+		User user = userRepository.findByEmail(email);
+		Event eventToExclude = eventRepository.findOne(event.getId());
+		event.setCreator(user);
+		if(event.getEvent_end().equals(event.getEvent_start())){
+			throw new InvalidEndOrStartDayOfEventException("Events have the same end and start");
+		}else if(event.getEvent_end().before(event.getEvent_start())){
+			throw new InvalidEndOrStartDayOfEventException("The start of event is major of end");
+		}
+		List<Event> eventTest = eventRepository.findEventBetweenDate(event.getEvent_start(), event.getEvent_end(),event.getCreator().getId());
+		List<Event> eventTest2 = eventRepository.findEventBetweenDateInvited(event.getEvent_start(), event.getEvent_end(),event.getCreator().getId());
+		eventTest.remove(eventToExclude);
+		eventTest2.remove(eventToExclude);
+		if(eventTest.size() > 0 || eventTest2.size() > 0){
+			throw new CannotAcceptInviteException("Cannot create event because have another in same time");
+		}else{		
+			Event eventToUpdate = eventRepository.findOne(event.getId());
+			eventToUpdate.setDescription(event.getDescription());
+			eventToUpdate.setEvent_end(event.getEvent_end());
+			eventToUpdate.setEvent_start(event.getEvent_start());
+			eventRepository.save(eventToUpdate);
+			return eventToUpdate;
+		}
 	}
 	
-	public void removeEvent(Event event){
-		eventRepository.removeEvent(event.getId());		
+	public void removeEvent(Long id){
+		eventRepository.removeEvent(id);		
 	}
 	
 	public Page<Event> listEvents(Integer page, Integer size, String email){
@@ -89,9 +107,14 @@ public class EventService {
 		for (Invite invite : invites) {
 			Event tempEvent = invite.getEvent();
 			tempEvent.setInvitedEvent(true);
+			tempEvent.setInvite(invite.getId());
 			eventsInvites.add(tempEvent);
-		}
-		Collections.sort(eventsInvites);		
+		}		
+		Set<Event> eventsSet = new HashSet<Event>();
+		eventsSet.addAll(eventsInvites);
+		eventsInvites.clear();
+		eventsInvites.addAll(eventsSet);
+		Collections.sort(eventsInvites);
 		return eventsInvites;
 	}
 	

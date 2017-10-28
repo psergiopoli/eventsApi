@@ -46,6 +46,9 @@ public class Event implements Comparable<Event>{
 	
 	@Transient
 	private boolean invitedEvent = false;
+	
+	@Transient
+	private Long invite = null;
 
 	public Long getId() {
 		return id;
@@ -115,6 +118,14 @@ public class Event implements Comparable<Event>{
 	public int compareTo(Event o) {
 		return getEvent_end().compareTo(o.getEvent_end());
 		//return o.getEvent_end().compareTo(getEvent_end());
+	}
+
+	public Long getInvite() {
+		return invite;
+	}
+
+	public void setInvite(Long invite) {
+		this.invite = invite;
 	}
 
 }

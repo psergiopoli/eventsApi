@@ -56,6 +56,7 @@ public class InviteService {
 		
 		List<Invite> inviteTest = inviteRepository.findEventBetweenDate(invite.getEvent().getEvent_start(), invite.getEvent().getEvent_end(),invite.getInvited().getId());
 		List<Event> eventTest = eventRepository.findEventBetweenDate(invite.getEvent().getEvent_start(), invite.getEvent().getEvent_end(),invite.getInvited().getId());
+		eventTest.remove(invite.getEvent());
 		if(inviteTest.size() > 0|| eventTest.size()>0 ){
 			throw new CannotAcceptInviteException("This invite cannot be accepted because have another in same date");
 		}else{
