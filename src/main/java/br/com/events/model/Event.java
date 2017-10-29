@@ -48,6 +48,9 @@ public class Event implements Comparable<Event>{
 	private boolean invitedEvent = false;
 	
 	@Transient
+	private boolean invitedEventAccepted = false;
+	
+	@Transient
 	private Long invite = null;
 
 	public Long getId() {
@@ -126,6 +129,14 @@ public class Event implements Comparable<Event>{
 
 	public void setInvite(Long invite) {
 		this.invite = invite;
+	}
+
+	public boolean isInvitedEventAccepted() {
+		return invitedEventAccepted;
+	}
+
+	public void setInvitedEventAccepted(boolean invitedEventAccepted) {
+		this.invitedEventAccepted = invitedEventAccepted;
 	}
 
 }

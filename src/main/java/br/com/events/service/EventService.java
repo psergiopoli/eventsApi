@@ -107,6 +107,7 @@ public class EventService {
 		for (Invite invite : invites) {
 			Event tempEvent = invite.getEvent();
 			tempEvent.setInvitedEvent(true);
+			tempEvent.setInvitedEventAccepted(invite.isAccepted());
 			tempEvent.setInvite(invite.getId());
 			eventsInvites.add(tempEvent);
 		}		

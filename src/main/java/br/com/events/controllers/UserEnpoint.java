@@ -1,11 +1,14 @@
 package br.com.events.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -46,6 +49,20 @@ public class UserEnpoint {
 	public ResponseEntity<User> getUser(Authentication authentication) {
 		User user = userService.findUserByEmail(authentication.getName());
 		return new ResponseEntity<User>(user, HttpStatus.OK);
+	}
+	
+	@Secured("ROLE_USER")
+	@RequestMapping(value = "/user/all", method = RequestMethod.GET)
+	public ResponseEntity<List<User>> getAllUsers(Authentication authentication) {
+		List<User> users = userService.getAllUsers();
+		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
+	}
+	
+	@Secured("ROLE_USER")
+	@RequestMapping(value = "/user/not/invited/{eventId}", method = RequestMethod.GET)
+	public ResponseEntity<List<User>> getAllUsersNotInvitedForEvent(@PathVariable Long eventId,Authentication authentication) {
+		List<User> users = userService.getAllUsersNotInvitedForEvent(eventId,authentication.getName());
+		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
 	}
 
 }
