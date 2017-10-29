@@ -71,6 +71,13 @@ public class InviteService {
 		inviteRepository.save(invite);	
 	}
 	
+	public void cancelInvite(Long eventId,Long userId, String email){
+		User user = userRepository.findOne(userId);
+		User whoInvitedUser = userRepository.findByEmail(email);
+		Invite invite = inviteRepository.findByEventAndInvitedAndWhoInvited(eventId, user.getId(), whoInvitedUser.getId());
+		inviteRepository.delete(invite);
+	}
+	
 	public List<Invite> listInvites(String emailInvited){
 		User whoInvitedUser = userRepository.findByEmail(emailInvited);
 		List<Invite> invites = inviteRepository.findByInvited(whoInvitedUser);

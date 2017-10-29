@@ -38,6 +38,12 @@ public class InviteEndpoint {
     	return new ResponseEntity<ResponseUtil>(new ResponseUtil("invite send"),HttpStatus.OK);
     }
     
+    @RequestMapping(value = "/invite/cancel", method=RequestMethod.DELETE)
+    public ResponseEntity<ResponseUtil> uninvite(@RequestParam(name="event")Long eventId,@RequestParam(name="user")Long userId,Authentication authentication) {
+		inviteService.cancelInvite(eventId, userId, authentication.getName());
+		return new ResponseEntity<ResponseUtil>(new ResponseUtil("invite canceled"),HttpStatus.OK);
+    }
+    
     @RequestMapping(value = "/invite/{inviteId}", method=RequestMethod.GET)
     public ResponseEntity<Invite> getInvite(@PathVariable(name="inviteId")Long inviteId,Authentication authentication) {
     	Invite invite = inviteService.getInviteById(inviteId);
